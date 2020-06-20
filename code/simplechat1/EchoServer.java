@@ -46,9 +46,9 @@ public class EchoServer extends AbstractServer
    * @param client The connection from which the message originated.
    */
   public void handleMessageFromClient
-    (Object msg, ConnectionToClient client)
+    (Object msg, ConnectionToClient loginid)
   {
-    System.out.println("Message received: " + msg + " from " + client);
+    System.out.println("Message received from: "  + msg + " from " + loginid);
     this.sendToAllClients(msg);
   }
     
@@ -105,5 +105,113 @@ public class EchoServer extends AbstractServer
       System.out.println("ERROR - Could not listen for clients!");
     }
   }
-}
+
+  public void handleMessageFromServer(Object message) 
+  {
+    // sendToAllClients(msg);
+    try
+    {
+      if (message.equals("#quit")){ // will quit the server if called
+        System.out.println("You are now closing the server...");
+        System.exit(1);
+      }
+      else if (message.equals("#stop")){ // closes the connection to the server client remains active
+        stopListening();
+      }
+      else if (message.equals("#close")){ // closes the connection to all clients and stops listening.
+        close();
+      }
+  
+      else if (message.equals("#setport")){ //calls setPort ONLY if logged out
+        if (isListening()){
+          System.out.println("Server is already connected...");
+        }else{
+          // setPort(port);//need to include a port number but cant figure it out... should come from the console.
+          
+        }
+        
+      }
+      else if (message.equals("#start")){ // will allow client to log in if not connected to server
+        if (isListening()){
+          System.out.println("Server is already connected...");
+        }else{
+          run();
+        }
+      }
+      else if (message.equals("#getport")){ // displays current port
+        System.out.println(getPort());
+      }
+      else{
+      sendToAllClients(message);}
+    }
+    catch(IOException e)
+    {
+      String msg = "Command not understood";
+      sendToAllClients(msg);
+      System.exit(1);
+    }
+  }
+  // public static void handleMessageFromServer2(Object msg) 
+  // {
+  //   handleMessageFromServer(msg);
+  // }
+//E5c
+  public void clientConnected(ConnectionToClient client){
+    System.out.println("New client has connected!"); // prints message when a client connects
+  }
+
+  public void clientDisconnected(ConnectionToClient client){
+    System.out.println("A client has disconnected...");
+  }
+
+  /**
+   * This method handles all data coming from the UI            
+   *
+   * @param message The message from the UI.    
+   */
+  // public void handleMessageFromClientUI(String message)
+  // { 
+  //   try
+  //   {
+  //     if (message.equals("#quit")){ // will quit the server if called
+  //       System.out.println("You are now leaving the server...");
+  //       System.exit(1);
+  //     }
+  //     else if (message.equals("#stop")){ // closes the connection to the server client remains active
+  //       stopListening();
+  //     }
+  //     else if (message.equals("#close")){ // closes the connection to all clients and stops listening.
+  //       close();
+  //     }
+  
+  //     else if (message.equals("#setport")){ //calls setPort ONLY if logged out
+  //       if (isListening()){
+  //         System.out.println("Server is already connected...");
+  //       }else{
+  //         // setPort(port);//need to include a port number but cant figure it out... should come from the console.
+          
+  //       }
+        
+  //     }
+  //     else if (message.equals("#start")){ // will allow client to log in if not connected to server
+  //       if (isListening()){
+  //         System.out.println("Server is already connected...");
+  //       }else{
+  //         run();
+  //       }
+  //     }
+  //     else if (message.equals("#getport")){ // displays current port
+  //       System.out.println(getPort());
+  //     }
+  //     else{
+  //     handleMessageFromServer(message);}
+  //   }
+  //   catch(IOException e)
+  //   {
+  //     String msg = "Command not understood";
+  //     sendToAllClients(msg);
+  //     System.exit(1);
+  //   }
+  }
+// }
 //End of EchoServer class

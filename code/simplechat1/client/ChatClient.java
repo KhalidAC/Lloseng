@@ -27,6 +27,10 @@ public class ChatClient extends AbstractClient
    */
   ChatIF clientUI; 
 
+  ChatIF loginid;
+
+  int chgport;
+
   
   //Constructors ****************************************************
   
@@ -38,7 +42,7 @@ public class ChatClient extends AbstractClient
    * @param clientUI The interface type variable.
    */
   
-  public ChatClient(String host, int port, ChatIF clientUI) 
+  public ChatClient(String loginid,String host, int port, ChatIF clientUI) 
     throws IOException 
   {
     super(host, port); //Call the superclass constructor
@@ -65,10 +69,50 @@ public class ChatClient extends AbstractClient
    * @param message The message from the UI.    
    */
   public void handleMessageFromClientUI(String message)
-  {
+  { 
     try
     {
-      sendToServer(message);
+      if (message.equals("#quit")){ // will quit the server if called
+        System.out.println("You are now leaving the server...");
+        System.exit(1);
+      }
+      else if (message.equals("#logoff")){ // closes the connection to the server client remains active
+        closeConnection();
+      }
+      else if (message.equals("#sethost" )){//calls setHost ONLY if logged out
+        if (isConnected()){
+          System.out.println("You are already connected...");
+        }else{
+          // setHost(); //need to include a host but cant figure it out... should come from input from the console.
+          openConnection();
+
+        }
+      }
+      else if (message.equals("#setport" + chgport)){ //calls setPort ONLY if logged out
+        if (isConnected()){
+          System.out.println("You are already connected...");
+        }else{
+          // setPort(port);//need to include a port number but cant figure it out... should come from the console.
+          openConnection();
+        }
+        
+      }
+      else if (message.equals("#login" + loginid)){ // will allow client to log in if not connected to server
+        if (isConnected()==true){
+          System.out.println("You are already connected...");
+        }else{
+          openConnection();
+        }
+      }
+      else if (message.equals("#gethost")){ // displays current host
+        System.out.println(getHost());
+        
+      }
+      else if (message.equals("#getport")){ // displays current port
+        System.out.println(getPort());
+      }
+      else{
+      sendToServer(message);}
     }
     catch(IOException e)
     {
@@ -90,5 +134,13 @@ public class ChatClient extends AbstractClient
     catch(IOException e) {}
     System.exit(0);
   }
+/* Started to work on E5a through Teams Professor Lethrbridge mentioned it is not required to complete
+*/
+  // public void terminateClient(){
+  //   if (isConnected() != true){
+  //     System.out.println("The Server has closed terminating client...");
+  //     quit();
+  //   }
+  // }
 }
 //End of ChatClient class
