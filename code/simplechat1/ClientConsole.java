@@ -5,6 +5,7 @@
 import java.io.*;
 import client.*;
 import common.*;
+import ocsf.client.AbstractClient;
 
 /**
  * This class constructs the UI for a chat client.  It implements the
@@ -16,7 +17,7 @@ import common.*;
  * @author Dr Robert Lagani&egrave;re
  * @version July 2000
  */
-public class ClientConsole implements ChatIF 
+public class ClientConsole<host, port> implements ChatIF 
 {
   //Class variables *************************************************
   
@@ -41,11 +42,11 @@ public class ClientConsole implements ChatIF
    * @param host The host to connect to.
    * @param port The port to connect on.
    */
-  public ClientConsole(String host, int port) 
+  public ClientConsole(String loginid, String host, int port) 
   {
     try 
     {
-      client= new ChatClient(host, port, this);
+      client= new ChatClient(loginid ,host, port, this);
     } 
     catch(IOException exception) 
     {
@@ -74,6 +75,8 @@ public class ClientConsole implements ChatIF
       {
         message = fromConsole.readLine();
         client.handleMessageFromClientUI(message);
+        
+        
       }
     } 
     catch (Exception ex) 
@@ -91,7 +94,7 @@ public class ClientConsole implements ChatIF
    */
   public void display(String message) 
   {
-    System.out.println("> " + message);
+    System.out.println(ChatIF.loginid + "> " + message);
   }
 
   
@@ -106,16 +109,32 @@ public class ClientConsole implements ChatIF
   {
     String host = "";
     int port = 0;  //The port number
-
+    
+    if (args[0]==null){
+      System.out.println("Please enter with a login id");
+      System.exit(1);
+    }else{
+      ChatIF.loginid= args[0];
+    }
     try
     {
-      host = args[0];
+      host = args[1];
     }
     catch(ArrayIndexOutOfBoundsException e)
     {
       host = "localhost";
     }
-    ClientConsole chat= new ClientConsole(host, DEFAULT_PORT);
+    //E5b
+    try
+    {
+      port = Integer.parseInt(args[2]); //Get port from command line
+    }
+    catch(Throwable t)
+    {
+      port = DEFAULT_PORT; //Set port to 5555
+    }
+
+    ClientConsole chat= new ClientConsole(ChatClient.loginid,host, port);
     chat.accept();  //Wait for console data
   }
 }
